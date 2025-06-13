@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS public.notes (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    consent VARCHAR(255) NOT NULL,
+    createdat TIMESTAMP DEFAULT NOW()
+);

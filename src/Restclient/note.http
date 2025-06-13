@@ -1,0 +1,8 @@
+### Creating a new NOTE
+POST http://localhost:3001/note
+Content-Type: application/json
+
+{
+  "title": "The Big lie",
+  "consent": "hfej hrhn"
+}
