@@ -1,106 +1,56 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable prettier/prettier */
- import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+ import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
-import { ApiResponse } from 'src/Api-Response/api-response.interface';
+//import { ApiResponse as ApiResponseType } from 'src/Api-Response/api-response.interface';
 import { Note } from './interface/note.interface';
-import { UpdateNoteDto } from './dto/update-note.dto';
+//import { UpdateNoteDto } from './dto/update-note.dto';
 import { NoteService } from './note.service';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { UpdateNoteDto } from './dto/update-note.dto';
 
-@Controller('note')
+@Controller('notes')
 export class NoteController {
-        constructor(private readonly notesService: NoteService) {}
+    constructor(private readonly notesService: NoteService) {}
+
 
   @Post()
-@Post()
-async create(@Body() createnoteDto: CreateNoteDto): Promise<ApiResponse<Note>> {
-  // eslint-disable-next-line no-useless-catch
-  try {
-    const note = await this.notesService.create(createnoteDto);
-    return {
-      success: true,
-      message: 'note created successfully',
-      note: note,
-    };
-  } catch (error) {
-    throw error;  
+  @ApiOperation({ summary: "Create a new note" })
+  @ApiBody({ type: CreateNoteDto })
+  @ApiResponse({
+    status: 201,
+    description: "The note has been successfully created.",
+    type: CreateNoteDto,
+  })
+  @ApiResponse({ status: 400, description: "Bad Request." })
+  async create(@Body() createNoteDto: CreateNoteDto): Promise<Note> {
+    return this.notesService.create(createNoteDto);
   }
+
+
+
+@Get()
+@ApiResponse({ status: 200, description: 'All notes' })
+findAll() {
+  return this.notesService.findAll();
 }
 
-
-
-  @Get()
-  async findAll(): Promise<ApiResponse<Note[]>> {
-    try {
-      const notes = await this.notesService.findAll();
-      return {
-        success: true,
-        message: `Retrieved ${notes.length} notes`,
-      note: notes,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: 'Failed to retrieve notes',
-        error: error instanceof Error ? error.message : 'Unknown Error',
-      };
-    }
-    
+ @Get(':id')
+  @ApiResponse({ status: 200, description: 'Single note' })
+  @ApiResponse({ status: 404, description: 'Note not found' })
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.notesService.findOne(id);
+  }
+  @Put(':id')
+  @Put(':id')
+  @ApiResponse({ status: 200, description: 'Note updated' })
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateNoteDto) {
+    return this.notesService.update(id, dto);
   }
 
-  @Get(':id')
-   async findOne(@Param('id') id: number): Promise<ApiResponse<Note>> {
-    try {
-        const note = await this.notesService.findOne(id);
-        return{
-            success: true,
-            message: `note with ID ${id} retrieved successfully`,
-            note: note,
-        }
-    } catch (error) {
-        return {
-            success: false,
-            message: `Failed to retrieve note with ID ${id}`,
-            error: error instanceof Error ? error.message : 'Unknown Error',
-        };
-    }
+  @Delete(':id')
+  @ApiResponse({ status: 200, description: 'Note deleted' })
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.notesService.remove(id);
   }
-
- @Put(':id')
-async update(@Param('id') id: number, @Body() updatenoteDto: UpdateNoteDto): Promise<ApiResponse<Note>> {
-  try {
-    const note = await this.notesService.update(id, updatenoteDto);
-    return {
-      success: true,
-      message: `note with ID ${id} updated successfully`,
-      note: note,  
-    };
-  } catch (error) {
-    return {
-      success: false,
-      message: `Failed to update note with ID ${id}`,
-      error: error instanceof Error ? error.message : 'Unknown Error',
-    };
-  }
-}
-
-
-
-
-@Delete(':id')
-async Delete(@Param('id') id: number): Promise<ApiResponse<null>> {
-  try {
-    await this.notesService.Delete(id);
-    return {
-      success: true,
-      message: `note with ID ${id} deleted permanently`,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      message: `Failed to delete note with ID ${id}`,
-      error: error instanceof Error ? error.message : 'Unknown Error',
-    };
-  }
-}
 }

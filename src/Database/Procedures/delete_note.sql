@@ -1,10 +1,6 @@
-CREATE OR REPLACE FUNCTION delete_note(p_id INTEGER)
-RETURNS VOID AS $$
+CREATE OR REPLACE PROCEDURE delete_note_by_id(IN p_id INT)
+LANGUAGE plpgsql AS $$
 BEGIN
   DELETE FROM notes WHERE id = p_id;
-
-  IF NOT FOUND THEN
-    RAISE EXCEPTION 'Note with ID % not found', p_id;
-  END IF;
 END;
-$$ LANGUAGE plpgsql;
+$$

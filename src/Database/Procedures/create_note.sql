@@ -1,20 +1,10 @@
-CREATE OR REPLACE FUNCTION create_note(
-    p_title VARCHAR,
-    p_consent VARCHAR
-)
-RETURNS TABLE(
-    id INTEGER,
-    title VARCHAR,
-    consent VARCHAR
-) AS $$
-BEGIN
-    IF EXISTS (SELECT 1 FROM notes WHERE title = p_title) THEN
-        RAISE EXCEPTION 'note with title % already exists', p_title;
-    END IF;
 
-    RETURN QUERY
-    INSERT INTO notes (title, consent)
-    VALUES (p_title, p_consent)
-    RETURNING id, title, consent;
+CREATE OR REPLACE FUNCTION create_note(IN p_title TEXT, IN p_content TEXT)
+LANGUAGE plpgsql AS $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM notes WHERE title = p_title) THEN
+    RAISE EXCEPTION 'Note title already exists';
+  END IF;
+  INSERT INTO notes (title, content, created_at) VALUES (p_title, p_content, NOW());
 END;
-$$ LANGUAGE plpgsql;
+$$;

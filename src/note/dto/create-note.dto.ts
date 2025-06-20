@@ -1,6 +1,17 @@
 /* eslint-disable prettier/prettier */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable prettier/prettier */
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from 'class-validator';
+
 export class CreateNoteDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
   title: string;
-  consent: string;
-  createdAt: Date;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  content: string;
 }
